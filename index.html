@@ -4,7 +4,7 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Kerry Bros — IT Helpdesk</title>
-<script src="https://alcdn.msauth.net/browser/2.38.3/js/msal-browser.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@azure/msal-browser@3.28.1/lib/msal-browser.min.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet" />
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -732,31 +732,40 @@ let dashFilterStatus = 'all';
 
 // ── INIT ──
 async function init() {
-  msalInstance = new msal.PublicClientApplication(msalConfig);
-  await msalInstance.initialize();
-  const resp = await msalInstance.handleRedirectPromise();
-  if (resp && resp.account) {
-    currentAccount = resp.account;
-    showApp();
-  } else {
+  try {
+    msalInstance = new msalBrowser.PublicClientApplication(msalConfig);
+    await msalInstance.initialize();
     const accounts = msalInstance.getAllAccounts();
     if (accounts.length > 0) {
       currentAccount = accounts[0];
       showApp();
     }
+  } catch(e) {
+    console.error('MSAL init error:', e);
   }
 }
 
 async function signIn() {
   try {
-    await msalInstance.loginRedirect(loginRequest);
+    const resp = await msalInstance.loginPopup(loginRequest);
+    if (resp && resp.account) {
+      currentAccount = resp.account;
+      showApp();
+    }
   } catch(e) {
-    console.error(e);
+    console.error('Login error:', e);
+    if (e.errorCode !== 'user_cancelled') {
+      alert('Sign in failed: ' + (e.message || e));
+    }
   }
 }
 
 function signOut() {
-  msalInstance.logoutRedirect({ account: currentAccount });
+  msalInstance.logoutPopup({ account: currentAccount }).then(() => {
+    currentAccount = null;
+    document.getElementById("app").classList.remove("visible");
+    document.getElementById("login-screen").style.display = "flex";
+  });
 }
 
 function showApp() {
@@ -778,7 +787,7 @@ async function getToken() {
     const result = await msalInstance.acquireTokenSilent({ ...loginRequest, account: currentAccount });
     return result.accessToken;
   } catch(e) {
-    const result = await msalInstance.acquireTokenPopup(loginRequest);
+    const result = await msalInstance.acquireTokenPopup({ ...loginRequest, account: currentAccount });
     return result.accessToken;
   }
 }
