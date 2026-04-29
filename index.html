@@ -733,7 +733,7 @@ let dashFilterStatus = 'all';
 // ── INIT ──
 async function init() {
   try {
-    msalInstance = new msalBrowser.PublicClientApplication(msalConfig);
+    msalInstance = new msal.PublicClientApplication(msalConfig);
     await msalInstance.initialize();
     const accounts = msalInstance.getAllAccounts();
     if (accounts.length > 0) {
