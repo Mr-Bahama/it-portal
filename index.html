@@ -4,7 +4,7 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Kerry Bros — IT Helpdesk</title>
-<script src="https://cdn.jsdelivr.net/npm/@azure/msal-browser@3.28.1/lib/msal-browser.min.js"></script>
+
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet" />
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -709,7 +709,7 @@ const CLIENT_ID = 'b24a50c5-c9d3-4770-b049-c0891facc5da';
 const TENANT_ID = '71449907-396e-4bc8-81bc-1bdfc7592379';
 const SP_SITE = 'kerrybros.sharepoint.com,/sites/IT2';
 const SP_LIST_NAME = 'IT Tickets';
-const REDIRECT_URI = window.location.origin + window.location.pathname;
+const REDIRECT_URI = 'https://mr-bahama.github.io/it-portal/';
 
 const msalConfig = {
   auth: {
@@ -1062,7 +1062,8 @@ function showToast(msg) {
   setTimeout(() => t.classList.remove('show'), 3000);
 }
 
-init();
 </script>
+<script src="https://cdn.jsdelivr.net/npm/@azure/msal-browser@2.38.3/lib/msal-browser.min.js"></script>
+<script>init();</script>
 </body>
 </html>
