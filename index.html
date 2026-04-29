@@ -707,7 +707,8 @@
 // ── CONFIG ──
 const CLIENT_ID = 'b24a50c5-c9d3-4770-b049-c0891facc5da';
 const TENANT_ID = '71449907-396e-4bc8-81bc-1bdfc7592379';
-const SP_SITE = 'kerrybros.sharepoint.com,/sites/IT2';
+const SP_HOSTNAME = 'kerrybros.sharepoint.com';
+const SP_SITE_PATH = '/sites/IT2';
 const SP_LIST_NAME = 'IT Tickets';
 const REDIRECT_URI = 'https://mr-bahama.github.io/it-portal/';
 
@@ -800,7 +801,7 @@ async function spRequest(path, method='GET', body=null) {
     headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json', 'Accept': 'application/json' }
   };
   if (body) opts.body = JSON.stringify(body);
-  const url = `https://graph.microsoft.com/v1.0/sites/${SP_SITE}/lists/${encodeURIComponent(SP_LIST_NAME)}/items${path}`;
+  const url = `https://graph.microsoft.com/v1.0/sites/${SP_HOSTNAME}:${SP_SITE_PATH}:/lists/${encodeURIComponent(SP_LIST_NAME)}/items${path}`;
   const res = await fetch(url, opts);
   if (!res.ok) { const err = await res.text(); throw new Error(err); }
   if (method === 'DELETE' || res.status === 204) return null;
