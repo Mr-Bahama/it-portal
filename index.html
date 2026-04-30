@@ -448,7 +448,14 @@ function showApp(){
 
 async function getToken(){
   try{const r=await msalInstance.acquireTokenSilent({...loginRequest,account:currentAccount});return r.accessToken;}
-  catch(e){const r=await msalInstance.acquireTokenPopup({...loginRequest,account:currentAccount});return r.accessToken;}
+  catch(e){
+    // Only use popup if triggered by user interaction
+    if(e.name==='InteractionRequiredAuthError'||e.errorCode==='interaction_required'||e.errorCode==='consent_required'||e.errorCode==='login_required'){
+      const r=await msalInstance.acquireTokenPopup({...loginRequest,account:currentAccount});
+      return r.accessToken;
+    }
+    throw e;
+  }
 }
 
 async function getSiteId(){
@@ -658,8 +665,7 @@ const kbArticles=[
   {id:'wifi',icon:'📶',cat:'Network',title:'Cannot connect to WiFi',summary:'Troubleshoot wireless connectivity issues',steps:['Check WiFi is enabled on your device (look for the WiFi icon in the system tray)','Forget the Kerry Bros network and reconnect — right-click WiFi icon → Forget network','Restart your device and try reconnecting','Try connecting in a different area of the office to rule out signal issues','If still not working, submit an IT ticket with your device model and location']},
   {id:'password',icon:'🔑',cat:'Access',title:'Forgot Microsoft 365 password',summary:'Reset your account password quickly',steps:['Go to login.microsoftonline.com and click "Forgot my password"','Enter your Kerry Bros email address','Choose your verification method (email or phone)','Follow the prompts to set a new password','If self-service reset is blocked, email helpdesk@kerrybros.com']},
   {id:'printer',icon:'🖨️',cat:'Hardware',title:'Printer not working',summary:'Fix common printer issues and add a new printer',steps:['Check the printer is powered on and showing "Ready" on its display','Make sure you are on the Kerry Bros WiFi network','On Windows: Settings → Printers & Scanners → Add a printer','Select the printer matching your floor (e.g. Floor3-HP)','Print a test page — if it fails, restart both your PC and the printer','If offline: right-click printer → See what\'s printing → Printer menu → Use Printer Online']},
-  {id:'slow',icon:'🐢',cat:'Hardware',title:'Computer running slowly',summary:'Speed up a sluggish PC or Mac',steps:['Restart your computer — clears memory and applies updates','Close unused browser tabs and applications','Check for Windows updates: Settings → Windows Update → Check for updates','Clear browser cache: in Chrome press Ctrl+Shift+Delete → Clear data','If disk is nearly full, move files to OneDrive','Contact IT if slowness persists — your device may need a RAM upgrade']},
-  {id:'vpn',icon:'🔒',cat:'Network',title:'VPN not connecting',summary:'Fix VPN connection and credential issues',steps:['Confirm you have an active internet connection first','Open the VPN client and check you are using the correct server address','Try disconnecting and reconnecting','Restart the VPN application completely','Check VPN credentials have not expired — passwords reset every 90 days','Submit a ticket if you see error code 800 or 619']},
+  {id:'slow',icon:'🐢',cat:'Hardware',title:'Computer running slowly',summary:'Speed up a sluggish PC or Mac',steps:['Restart your computer — clears memory and applies updates','Close unused browser tabs and applications','Check for Windows updates: Settings → Windows Update → Check for updates','Clear browser cache: in Chrome press Ctrl+Shift+Delete → Clear data','If disk is nearly full, move files to OneDrive','Contact IT if slowness persists — your device may need a RAM upgrade']}
   {id:'outlook',icon:'📧',cat:'Software',title:'Outlook not loading email',summary:'Fix common Outlook syncing problems',steps:['Check your internet connection is working','Close Outlook completely and reopen it','If stuck "Trying to connect": File → Account Settings → verify your email','Try Outlook Safe Mode: hold Ctrl while clicking the Outlook icon','Disable add-ins: File → Options → Add-ins → Manage COM Add-ins → uncheck all','If emails not syncing: right-click your inbox → Update Folder']},
 ];
 
